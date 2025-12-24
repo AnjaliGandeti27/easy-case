@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Case Management System</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: #fff;
+        }
+
+        nav {
+            background: rgba(0,0,0,0.3);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px 50px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+
+        nav h1 {
+            font-size: 28px;
+            margin: 0;
+        }
+
+        nav a {
+            color: #fff;
+            text-decoration: none;
+            margin-left: 20px;
+            font-weight: bold;
+            padding: 8px 20px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            transition: 0.3s;
+        }
+
+        nav a:hover {
+            background: rgba(255,255,255,0.4);
+        }
+
+        header {
+            text-align: center;
+            padding: 150px 20px 100px 20px;
+        }
+
+        header h2 {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        header p {
+            font-size: 20px;
+            max-width: 600px;
+            margin: auto;
+            line-height: 1.5;
+        }
+
+        .buttons {
+            margin-top: 40px;
+        }
+
+        .buttons a {
+            text-decoration: none;
+            padding: 15px 35px;
+            margin: 10px;
+            border-radius: 50px;
+            font-size: 18px;
+            font-weight: bold;
+            color: #fff;
+            background: #ff7e5f;
+            transition: 0.3s;
+        }
+
+        .buttons a:hover {
+            background: #feb47b;
+        }
+
+        footer {
+            text-align: center;
+            padding: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+            background: rgba(0,0,0,0.2);
+        }
+    </style>
+</head>
+
+<body>
+
+<nav>
+    <h1>Case Management System</h1>
+    <div>
+        <a href="login.html">Login</a>
+        <a href="#">About</a>
+    </div>
+</nav>
+
+<header>
+    <h2>Welcome to Cloud-Based Case Management</h2>
+    <p>
+        Replace large Excel sheets with a professional web platform. 
+        Manage cases, track status, and ensure faster, accurate, and secure case handling.
+    </p>
+    <div class="buttons">
+        <a href="login.html">Get Started</a>
+        <a href="#">Learn More</a>
+    </div>
+</header>
+
+<footer>
+    © 2025 Case Management System | GDG Project
+</footer>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="firebase.js"></script>
+
+</body>
+</html>

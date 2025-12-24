@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Register</title>
+<style>
+body{
+  background:#764ba2;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  height:100vh;
+  font-family:Arial;
+}
+.box{
+  background:white;
+  padding:30px;
+  border-radius:12px;
+  width:300px;
+}
+input,button{
+  width:100%;
+  padding:12px;
+  margin:10px 0;
+}
+</style>
+</head>
+
+<body>
+
+<div class="box">
+<h3>Register</h3>
+
+<form autocomplete="off">
+  <input type="text" name="fakeuser" style="display:none">
+  <input type="password" name="fakepass" style="display:none">
+
+  <input type="email" id="email" name="reg_email_new" placeholder="Email" autocomplete="new-email">
+  <input type="password" id="password" name="reg_pass_new" placeholder="Password" autocomplete="new-password">
+
+  <button type="button" onclick="register()">Register</button>
+</form>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="firebase.js"></script>
+
+<script>
+window.onload = () => {
+  document.getElementById("email").value="";
+  document.getElementById("password").value="";
+};
+
+function register(){
+  auth.createUserWithEmailAndPassword(
+    document.getElementById("email").value,
+    document.getElementById("password").value
+  ).then(()=>{
+    alert("Registered");
+    window.location.href="login.html";
+  }).catch(e=>alert(e.message));
+}
+</script>
+
+</body>
+</html>

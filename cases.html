@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Case Records</title>
+
+<style>
+body {
+  font-family: Roboto, sans-serif;
+  background: #f1f3f6;
+  padding: 30px;
+}
+
+h2 {
+  margin-bottom: 20px;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  background: white;
+}
+
+th, td {
+  padding: 12px;
+  border: 1px solid #ddd;
+  text-align: center;
+}
+
+th {
+  background: #667eea;
+  color: white;
+}
+
+button {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: none;
+  background: #667eea;
+  color: white;
+  border-radius: 20px;
+  cursor: pointer;
+}
+</style>
+</head>
+
+<body>
+
+<h2>All Case Records</h2>
+
+<!-- ✅ STEP 1: TABLE -->
+<table id="casesTable" border="1" width="100%">
+  <thead>
+    <tr>
+      <th>caseID</th>
+      <th>caseType</th>
+      <th>status</th>
+      <th>officer</th>
+      <th>date</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+<td>${c.type}</td>
+<td>${c.date}</td>
+
+<button onclick="goBack()">⬅ Back to Dashboard</button>
+
+<!-- ✅ STEP 2: FIREBASE SDKs -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<!-- ✅ STEP 3: FIREBASE CONFIG -->
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyDFz1cxbZ-sZGbcFTU_qzwTrQg_MiAjawg",
+  authDomain: "easy-case.firebaseapp.com",
+  projectId: "easy-case",
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+</script>
+
+<!-- ✅ STEP 4: READ FIRESTORE DATA -->
+<script>
+const table = document.getElementById("casesTable");
+
+db.collection("cases").onSnapshot(snapshot => {
+  table.innerHTML = "";   // clear old rows
+
+  snapshot.forEach(doc => {
+    const c = doc.data();
+
+    table.innerHTML += `
+      <tr>
+        <td>${c.caseId}</td>
+        <td>${c.caseType}</td>
+        <td>${c.status}</td>
+        <td>${c.officer}</td> 
+        <td>${c.date}</td>
+      </tr>
+    `;
+  });
+});
+</script>
+
+<script>
+function goBack() {
+  window.location.href = "dashboard.html";
+}
+</script>
+
+</body>
+</html>

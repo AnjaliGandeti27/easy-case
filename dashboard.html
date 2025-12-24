@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Dashboard | Case Management System</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body {
+    margin: 0;
+    font-family: 'Roboto', sans-serif;
+    background: #f1f3f6;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 25px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+header h1 {
+    margin: 0;
+    font-size: 26px;
+}
+
+header button {
+    padding: 10px 25px;
+    border-radius: 25px;
+    border: none;
+    background: #ff7e5f;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.container {
+    padding: 40px;
+}
+
+.section-title {
+    font-size: 22px;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+}
+
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 15px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.card h2 {
+    margin: 0;
+    font-size: 40px;
+    color: #667eea;
+}
+
+.card p {
+    margin-top: 10px;
+    font-size: 18px;
+    color: #555;
+}
+
+.actions {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.actions button {
+    padding: 15px 30px;
+    border-radius: 30px;
+    border: none;
+    font-size: 16px;
+    cursor: pointer;
+    color: white;
+    background: #667eea;
+}
+
+.actions button:hover {
+    background: #764ba2;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h1>Case Management Dashboard</h1>
+    <button onclick="logout()">Logout</button>
+</header>
+
+<div class="container">
+
+    <div class="section-title">Case Overview</div>
+
+    <div class="cards">
+        <div class="card">
+            <h2>128</h2>
+            <p>Total Cases</p>
+        </div>
+
+        <div class="card">
+            <h2>46</h2>
+            <p>Ongoing Cases</p>
+        </div>
+
+        <div class="card">
+            <h2>82</h2>
+            <p>Solved Cases</p>
+        </div>
+    </div>
+
+    <div class="section-title">Actions</div>
+
+   <!-- Actions Section -->
+    <div class="actions">
+    <button onclick="window.location.href='cases.html'">View Case Records</button>
+    <button onclick="window.location.href='add case.html'">Add New Case</button>
+    <button onclick="window.location.href='export.html'">Export Data</button>
+    </div>
+
+</div>
+
+<script>
+// ---- ALL CASE DATA (Single Source of Truth) ----
+const casesData = [
+    {
+        id: "CN-101",
+        type: "Theft",
+        status: "Ongoing",
+        officer: "Officer A",
+        updated: "21-Dec-2025"
+    },
+    {
+        id: "CN-102",
+        type: "Cyber Fraud",
+        status: "Solved",
+        officer: "Officer B",
+        updated: "18-Dec-2025"
+    },
+    {
+        id: "CN-103",
+        type: "Missing Person",
+        status: "Pending",
+        officer: "Officer C",
+        updated: "15-Dec-2025"
+    }
+];
+
+// ---- EXPORT FUNCTION WITH FILTER ----
+function exportData(filterType) {
+
+    let filteredCases = casesData;
+
+    // Apply filters
+    if (filterType === "SOLVED") {
+        filteredCases = casesData.filter(c => c.status === "Solved");
+    }
+    else if (filterType === "ONGOING") {
+        filteredCases = casesData.filter(c => c.status === "Ongoing");
+    }
+
+    // CSV Header
+    let csvContent = "Case ID,Case Type,Status,Officer,Last Updated\n";
+
+    // CSV Rows
+    filteredCases.forEach(c => {
+        csvContent += `${c.id},${c.type},${c.status},${c.officer},${c.updated}\n`;
+    });
+
+    // Download CSV
+    const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "case_records.csv";
+    link.click();
+}
+
+// ---- LOGOUT ----
+function logout() {
+    alert("Logged out successfully!");
+    window.location.href = "login.html";
+}
+</script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+<script src="firebase.js"></script>
+<script>
+db.collection("cases").onSnapshot(snapshot => {
+  let total = snapshot.size;
+  let ongoing = 0;
+  let solved = 0;
+
+  snapshot.forEach(doc => {
+    const data = doc.data();
+    if (data.status === "Ongoing") ongoing++;
+    if (data.status === "Solved") solved++;
+  });
+
+  // Update numbers on dashboard cards
+  document.querySelectorAll(".card h2")[0].innerText = total;
+  document.querySelectorAll(".card h2")[1].innerText = ongoing;
+  document.querySelectorAll(".card h2")[2].innerText = solved;
+});
+</script>
+
+
+</body>
+</html>

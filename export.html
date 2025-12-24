@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Selective Case Export</title>
+
+<style>
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background: #f1f3f6;
+}
+
+header {
+    background: linear-gradient(135deg, #667eea, #764ba2);
+    color: white;
+    padding: 20px 40px;
+}
+
+.container {
+    padding: 30px 40px;
+}
+
+.controls {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+}
+
+button {
+    padding: 10px 22px;
+    border-radius: 20px;
+    border: none;
+    cursor: pointer;
+    background: #667eea;
+    color: white;
+}
+
+button:hover {
+    background: #764ba2;
+}
+
+input {
+    padding: 10px 15px;
+    border-radius: 20px;
+    border: 1px solid #ccc;
+    min-width: 260px;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    background: white;
+}
+
+th, td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+th {
+    background: #667eea;
+    color: white;
+}
+</style>
+</head>
+
+<body>
+
+<header>
+    <h2>Export Case Data (Selective)</h2>
+</header>
+
+<div class="container">
+
+    <!-- CONTROLS -->
+    <div class="controls">
+        <button onclick="loadCases('ALL')">Load All</button>
+        <button onclick="loadCases('Solved')">Solved</button>
+        <button onclick="loadCases('Unsolved')">Unsolved</button>
+
+        <input 
+            type="text"
+            id="searchBox"
+            placeholder="Search Case ID / Type / Officer"
+            onkeyup="searchCases()"
+        >
+
+        <button onclick="exportSelected()">Export Selected</button>
+        <button onclick="goBack()">⬅ Dashboard</button>
+    </div>
+
+    <!-- TABLE -->
+    <table>
+        <thead> 
+            <tr>
+                <th>Select</th>
+                <th>Case ID</th>
+                <th>Type</th>
+                <th>Status</th>
+                <th>Officer</th>
+                <th>Updated</th>
+            </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+    </table>
+
+</div>
+
+    <script>
+let allCases = [];
+let currentList = [];
+let viewList = [];
+
+// 🔥 LOAD DATA FROM FIRESTORE
+function loadFromFirestore() {
+    db.collection("cases").onSnapshot(snapshot => {
+        allCases = [];
+
+        snapshot.forEach(doc => {
+            const d = doc.data();
+            allCases.push({
+                id: d.caseId,
+                type: d.caseType,
+                status: d.status,
+                officer: d.officer,
+                date: d.date     // ✅ correct column name
+            });
+        });
+
+        loadCases("ALL");
+    });
+}
+
+// LOAD CASES BY STATUS
+function loadCases(status) {
+    if (status === "ALL") {
+        currentList = [...allCases];
+    } else {
+        currentList = allCases.filter(c => c.status === status);
+    }
+
+    viewList = [...currentList];
+    document.getElementById("searchBox").value = "";
+    renderTable();
+}
+
+// SEARCH FUNCTION
+function searchCases() {
+    const term = document.getElementById("searchBox").value.toLowerCase();
+
+    viewList = currentList.filter(c =>
+        c.id.toLowerCase().includes(term) ||
+        c.type.toLowerCase().includes(term) ||
+        c.officer.toLowerCase().includes(term)
+    );
+
+    renderTable();
+}
+
+// RENDER TABLE
+function renderTable() {
+    const tbody = document.getElementById("tableBody");
+    tbody.innerHTML = "";
+
+    viewList.forEach((c, index) => {
+        const row = document.createElement("tr");
+
+        row.innerHTML = `
+            <td><input type="checkbox" data-index="${index}"></td>
+            <td>${c.id}</td>
+            <td>${c.type}</td>
+            <td>${c.status}</td>
+            <td>${c.officer}</td>
+            <td>${c.date}</td>
+        `;
+
+        tbody.appendChild(row);
+    });
+}
+
+// EXPORT SELECTED
+function exportSelected() {
+    const checkboxes = document.querySelectorAll("input[type='checkbox']:checked");
+
+    if (checkboxes.length === 0) {
+        alert("Please select at least one case to export.");
+        return;
+    }
+
+    let csv = "Case ID,Type,Status,Officer,Date\n";
+
+    checkboxes.forEach(cb => {
+        const c = viewList[cb.dataset.index];
+        csv += `${c.id},${c.type},${c.status},${c.officer},${c.date}\n`;
+    });
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const link = document.createElement("a");
+    link.href = URL.createObjectURL(blob);
+    link.download = "selected_case_export.csv";
+    link.click();
+}
+
+// BACK
+function goBack() {
+    window.location.href = "dashboard.html";
+}
+
+// 🔥 AUTO LOAD
+window.onload = loadFromFirestore;
+</script>
+
+    
+
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
+    <script src="firebase.js"></script>
+
+
+</body>
+</html>
